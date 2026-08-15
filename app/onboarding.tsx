@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StarfieldBackground from '../src/components/StarfieldBackground';
+import Wordmark from '../src/components/Wordmark';
 import { TOPICS, type TopicId } from '../src/content/topics';
 import { getSelectedTopics, setOnboarded, setSelectedTopics } from '../src/storage/prefs';
 
@@ -56,10 +57,7 @@ export default function Onboarding() {
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <Animated.View style={{ opacity: fade, transform: [{ translateY: rise }] }}>
-            <View style={styles.brand}>
-              <Text style={styles.brandEmoji}>🌠</Text>
-              <Text style={styles.brandName}>Upscroll</Text>
-            </View>
+            <Wordmark />
             <Text style={styles.tagline}>Swap the scroll for something worth remembering.</Text>
 
             <Text style={styles.title}>What do you want to learn about?</Text>
@@ -131,24 +129,10 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 20,
   },
-  brand: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
-  },
-  brandEmoji: {
-    fontSize: 22,
-  },
-  brandName: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.3,
-  },
   tagline: {
     color: 'rgba(255,255,255,0.5)',
     fontSize: 13,
+    marginTop: 6,
     marginBottom: 28,
   },
   title: {
