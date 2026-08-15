@@ -9,7 +9,7 @@ export default function Wordmark() {
     <MaskedView maskElement={<Text style={styles.text}>Upscroll</Text>}>
       <LinearGradient
         colors={NEON_AURORA}
-        locations={[0, 0.32, 0.58, 0.85]}
+        locations={[0, 0.3333, 0.6667, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
       >
