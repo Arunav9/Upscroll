@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import StarfieldBackground from '../src/components/StarfieldBackground';
 import { TOPICS, type TopicId } from '../src/content/topics';
 import { setOnboarded, setSelectedTopics } from '../src/storage/prefs';
 
@@ -44,8 +45,7 @@ export default function Onboarding() {
 
   return (
     <LinearGradient colors={['#020617', '#0b1748', '#1d3fa8']} style={styles.container}>
-      <View style={[styles.glow, styles.glowTop]} />
-      <View style={[styles.glow, styles.glowBottom]} />
+      <StarfieldBackground />
 
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -120,22 +120,6 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-  },
-  glow: {
-    position: 'absolute',
-    width: 320,
-    height: 320,
-    borderRadius: 320,
-  },
-  glowTop: {
-    top: -140,
-    right: -100,
-    backgroundColor: 'rgba(96,165,250,0.22)',
-  },
-  glowBottom: {
-    bottom: -160,
-    left: -120,
-    backgroundColor: 'rgba(99,102,241,0.18)',
   },
   scrollContent: {
     padding: 24,
