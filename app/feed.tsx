@@ -14,7 +14,7 @@ import FactCard from '../src/components/FactCard';
 import { getFeed, type Fact } from '../src/content/provider';
 import { addSeenIds, getSavedIds, getSeenIds, getSelectedTopics, toggleSavedId } from '../src/storage/prefs';
 
-const SESSION_SIZE = 20;
+const SESSION_SIZE = 10;
 const SWIPE_THRESHOLD = 60;
 
 export default function Feed() {
@@ -42,15 +42,20 @@ export default function Feed() {
     loadDeck();
   }, [loadDeck]);
 
+  const transitioning = useRef(false);
+
   const runTransition = useCallback(
     (direction: 1 | -1, nextIndexOf: (prev: number) => number) => {
+      if (transitioning.current) return;
+      transitioning.current = true;
+
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      const exitTo = direction === 1 ? -40 : 40;
+      const exitTo = direction === 1 ? -24 : 24;
       const enterFrom = -exitTo;
 
       Animated.parallel([
-        Animated.timing(translateY, { toValue: exitTo, duration: 140, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0, duration: 140, useNativeDriver: true }),
+        Animated.timing(translateY, { toValue: exitTo, duration: 90, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0, duration: 90, useNativeDriver: true }),
       ]).start(() => {
         translateY.setValue(enterFrom);
         setState((prev) => {
@@ -61,9 +66,13 @@ export default function Feed() {
           const ended = !!deck && nextIndex >= deck.length;
           return { index: nextIndex, ended };
         });
+        // Unlock as soon as the content has swapped, not after the fade-in
+        // finishes — lets a fast follow-up tap interrupt the fade-in instead
+        // of queuing behind it, which is what makes rapid tapping feel snappy.
+        transitioning.current = false;
         Animated.parallel([
-          Animated.timing(translateY, { toValue: 0, duration: 180, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 1, duration: 180, useNativeDriver: true }),
+          Animated.timing(translateY, { toValue: 0, duration: 130, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 1, duration: 130, useNativeDriver: true }),
         ]).start();
       });
     },
@@ -115,10 +124,10 @@ export default function Feed() {
         <Text style={styles.endTitle}>You learned {deck.length} things.</Text>
         <Text style={styles.endSubtitle}>Nice. That's a session well spent.</Text>
         <Pressable style={styles.endButton} onPress={startMore}>
-          <Text style={styles.endButtonText}>Give me 20 more</Text>
+          <Text style={styles.endButtonText}>Give me {SESSION_SIZE} more</Text>
         </Pressable>
         <Pressable style={styles.endButtonSecondary} onPress={() => router.replace('/onboarding')}>
-          <Text style={styles.endButtonSecondaryText}>Change topics</Text>
+          <Text style={styles.endButtonSecondaryText}>Back to home</Text>
         </Pressable>
       </View>
     );

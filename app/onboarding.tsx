@@ -5,7 +5,7 @@ import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StarfieldBackground from '../src/components/StarfieldBackground';
 import { TOPICS, type TopicId } from '../src/content/topics';
-import { setOnboarded, setSelectedTopics } from '../src/storage/prefs';
+import { getSelectedTopics, setOnboarded, setSelectedTopics } from '../src/storage/prefs';
 
 const MIN_TOPICS = 3;
 
@@ -21,6 +21,12 @@ export default function Onboarding() {
       Animated.timing(rise, { toValue: 0, duration: 500, useNativeDriver: true }),
     ]).start();
   }, [fade, rise]);
+
+  useEffect(() => {
+    getSelectedTopics().then((topics) => {
+      if (topics.length > 0) setSelected(new Set(topics));
+    });
+  }, []);
 
   const toggle = (id: TopicId) => {
     setSelected((prev) => {
