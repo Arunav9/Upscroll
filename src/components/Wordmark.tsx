@@ -7,7 +7,12 @@ const NEON_AURORA = ['#22d3ee', '#3b82f6', '#d946ef', '#f472b6'] as const;
 export default function Wordmark() {
   return (
     <MaskedView maskElement={<Text style={styles.text}>Upscroll</Text>}>
-      <LinearGradient colors={NEON_AURORA} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+      <LinearGradient
+        colors={NEON_AURORA}
+        locations={[0, 0.32, 0.58, 0.85]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+      >
         <Text style={[styles.text, styles.hidden]}>Upscroll</Text>
       </LinearGradient>
     </MaskedView>
