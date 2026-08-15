@@ -1,10 +1,11 @@
 {
   "expo": {
-    "name": "No_Doomscrolling",
-    "slug": "No_Doomscrolling",
+    "name": "Upscroll",
+    "slug": "upscroll",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "scheme": "upscroll",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
@@ -19,7 +20,14 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }
