@@ -2,15 +2,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { TopicId } from '../content/topics';
 
 const KEYS = {
-  topics: 'nds:topics',
-  seen: 'nds:seenIds',
-  saved: 'nds:savedIds',
-  onboarded: 'nds:onboarded',
+  topics: 'upscroll:topics',
+  seen: 'upscroll:seenIds',
+  saved: 'upscroll:savedIds',
+  onboarded: 'upscroll:onboarded',
 } as const;
 
+async function readJson<T>(key: string, fallback: T): Promise<T> {
+  const raw = await AsyncStorage.getItem(key);
+  if (!raw) return fallback;
+  try {
+    return JSON.parse(raw) as T;
+  } catch (error) {
+    console.warn(`[prefs] Corrupted value for "${key}", falling back to default.`, error);
+    return fallback;
+  }
+}
+
 export async function getSelectedTopics(): Promise<TopicId[]> {
-  const raw = await AsyncStorage.getItem(KEYS.topics);
-  return raw ? JSON.parse(raw) : [];
+  return readJson<TopicId[]>(KEYS.topics, []);
 }
 
 export async function setSelectedTopics(topics: TopicId[]): Promise<void> {
@@ -18,8 +28,7 @@ export async function setSelectedTopics(topics: TopicId[]): Promise<void> {
 }
 
 export async function getSeenIds(): Promise<string[]> {
-  const raw = await AsyncStorage.getItem(KEYS.seen);
-  return raw ? JSON.parse(raw) : [];
+  return readJson<string[]>(KEYS.seen, []);
 }
 
 export async function addSeenIds(ids: string[]): Promise<void> {
@@ -29,8 +38,7 @@ export async function addSeenIds(ids: string[]): Promise<void> {
 }
 
 export async function getSavedIds(): Promise<string[]> {
-  const raw = await AsyncStorage.getItem(KEYS.saved);
-  return raw ? JSON.parse(raw) : [];
+  return readJson<string[]>(KEYS.saved, []);
 }
 
 export async function toggleSavedId(id: string): Promise<string[]> {

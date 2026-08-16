@@ -1,7 +1,7 @@
 import { Redirect } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { isOnboarded } from '../src/storage/prefs';
+import { isOnboarded } from '../src/services/prefs';
 
 export default function Index() {
   const [ready, setReady] = useState(false);
