@@ -1,14 +1,13 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { StyleSheet, Text } from 'react-native';
-
-const NEON_AURORA = ['#22d3ee', '#3b82f6', '#d946ef', '#f472b6'] as const;
+import { colors } from '../constants/theme';
 
 export default function Wordmark() {
   return (
     <MaskedView maskElement={<Text style={styles.text}>Upscroll</Text>}>
       <LinearGradient
-        colors={NEON_AURORA}
+        colors={colors.auroraGradient}
         locations={[0, 0.3333, 0.6667, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
