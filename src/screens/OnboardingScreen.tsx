@@ -1,13 +1,24 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Animated,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StarfieldBackground from '../components/StarfieldBackground';
 import Wordmark from '../components/Wordmark';
 import { colors } from '../constants/theme';
 import { TOPICS, type TopicId } from '../content/topics';
-import { getSelectedTopics, setOnboarded, setSelectedTopics } from '../services/prefs';
+import {
+  getSelectedTopics,
+  setOnboarded,
+  setSelectedTopics,
+} from '../services/prefs';
 
 const MIN_TOPICS = 3;
 
@@ -19,8 +30,16 @@ export default function OnboardingScreen() {
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fade, { toValue: 1, duration: 500, useNativeDriver: true }),
-      Animated.timing(rise, { toValue: 0, duration: 500, useNativeDriver: true }),
+      Animated.timing(fade, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(rise, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
     ]).start();
   }, [fade, rise]);
 
@@ -56,14 +75,22 @@ export default function OnboardingScreen() {
       <StarfieldBackground />
 
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <Animated.View style={{ opacity: fade, transform: [{ translateY: rise }] }}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <Animated.View
+            style={{ opacity: fade, transform: [{ translateY: rise }] }}
+          >
             <Wordmark />
-            <Text style={styles.tagline}>Swap the scroll for something worth remembering.</Text>
+            <Text style={styles.tagline}>
+              Swap the scroll for something worth remembering.
+            </Text>
 
             <Text style={styles.title}>What do you want to learn about?</Text>
             <Text style={styles.subtitle}>
-              Pick at least {MIN_TOPICS} topics. We'll turn your feed into fun facts instead of noise.
+              Pick at least {MIN_TOPICS} topics. We&apos;ll turn your feed into
+              fun facts instead of noise.
             </Text>
 
             <View style={styles.grid}>
@@ -73,12 +100,20 @@ export default function OnboardingScreen() {
                   <Pressable
                     key={topic.id}
                     onPress={() => toggle(topic.id)}
-                    style={({ pressed }) => [styles.chipTouch, pressed && styles.chipPressed]}
+                    style={({ pressed }) => [
+                      styles.chipTouch,
+                      pressed && styles.chipPressed,
+                    ]}
                   >
                     {isSelected ? (
-                      <LinearGradient colors={topic.gradient} style={styles.chip}>
+                      <LinearGradient
+                        colors={topic.gradient}
+                        style={styles.chip}
+                      >
                         <Text style={styles.chipEmoji}>{topic.emoji}</Text>
-                        <Text style={styles.chipLabelSelected}>{topic.label}</Text>
+                        <Text style={styles.chipLabelSelected}>
+                          {topic.label}
+                        </Text>
                         <Text style={styles.checkMark}>✓</Text>
                       </LinearGradient>
                     ) : (
@@ -96,20 +131,30 @@ export default function OnboardingScreen() {
 
         <View style={styles.footer}>
           <Text style={styles.counter}>
-            {selected.size} selected{!canStart ? ` · pick ${MIN_TOPICS - selected.size} more` : ' · ready to go'}
+            {selected.size} selected
+            {!canStart
+              ? ` · pick ${MIN_TOPICS - selected.size} more`
+              : ' · ready to go'}
           </Text>
           <Pressable
             onPress={handleStart}
             disabled={!canStart}
-            style={({ pressed }) => [pressed && canStart && styles.startButtonPressed]}
+            style={({ pressed }) => [
+              pressed && canStart && styles.startButtonPressed,
+            ]}
           >
             {canStart ? (
-              <LinearGradient colors={colors.ctaGradient} style={styles.startButton}>
+              <LinearGradient
+                colors={colors.ctaGradient}
+                style={styles.startButton}
+              >
                 <Text style={styles.startButtonText}>Start learning →</Text>
               </LinearGradient>
             ) : (
               <View style={[styles.startButton, styles.startButtonDisabled]}>
-                <Text style={styles.startButtonTextDisabled}>Start learning →</Text>
+                <Text style={styles.startButtonTextDisabled}>
+                  Start learning →
+                </Text>
               </View>
             )}
           </Pressable>
