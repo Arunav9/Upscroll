@@ -14,7 +14,10 @@ async function readJson<T>(key: string, fallback: T): Promise<T> {
   try {
     return JSON.parse(raw) as T;
   } catch (error) {
-    console.warn(`[prefs] Corrupted value for "${key}", falling back to default.`, error);
+    console.warn(
+      `[prefs] Corrupted value for "${key}", falling back to default.`,
+      error,
+    );
     return fallback;
   }
 }

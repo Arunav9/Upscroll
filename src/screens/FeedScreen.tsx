@@ -13,7 +13,13 @@ import {
 import FactCard from '../components/FactCard';
 import { colors } from '../constants/theme';
 import { getFeed, type Fact } from '../content/provider';
-import { addSeenIds, getSavedIds, getSeenIds, getSelectedTopics, toggleSavedId } from '../services/prefs';
+import {
+  addSeenIds,
+  getSavedIds,
+  getSeenIds,
+  getSelectedTopics,
+  toggleSavedId,
+} from '../services/prefs';
 
 const SESSION_SIZE = 10;
 const SWIPE_THRESHOLD = 60;
@@ -55,8 +61,16 @@ export default function FeedScreen() {
       const enterFrom = -exitTo;
 
       Animated.parallel([
-        Animated.timing(translateY, { toValue: exitTo, duration: 90, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0, duration: 90, useNativeDriver: true }),
+        Animated.timing(translateY, {
+          toValue: exitTo,
+          duration: 90,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 90,
+          useNativeDriver: true,
+        }),
       ]).start(() => {
         translateY.setValue(enterFrom);
         setState((prev) => {
@@ -72,12 +86,20 @@ export default function FeedScreen() {
         // of queuing behind it, which is what makes rapid tapping feel snappy.
         transitioning.current = false;
         Animated.parallel([
-          Animated.timing(translateY, { toValue: 0, duration: 130, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 1, duration: 130, useNativeDriver: true }),
+          Animated.timing(translateY, {
+            toValue: 0,
+            duration: 130,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 130,
+            useNativeDriver: true,
+          }),
         ]).start();
       });
     },
-    [deck, translateY, opacity]
+    [deck, translateY, opacity],
   );
 
   const advance = useCallback(() => {
@@ -101,7 +123,7 @@ export default function FeedScreen() {
           }
         },
       }),
-    [advance, goBack]
+    [advance, goBack],
   );
 
   const handleSave = useCallback(async (id: string) => {
@@ -123,11 +145,16 @@ export default function FeedScreen() {
       <View style={styles.endContainer}>
         <Text style={styles.endEmoji}>🎉</Text>
         <Text style={styles.endTitle}>You learned {deck.length} things.</Text>
-        <Text style={styles.endSubtitle}>Nice. That's a session well spent.</Text>
+        <Text style={styles.endSubtitle}>
+          Nice. That&apos;s a session well spent.
+        </Text>
         <Pressable style={styles.endButton} onPress={startMore}>
           <Text style={styles.endButtonText}>Give me {SESSION_SIZE} more</Text>
         </Pressable>
-        <Pressable style={styles.endButtonSecondary} onPress={() => router.replace('/onboarding')}>
+        <Pressable
+          style={styles.endButtonSecondary}
+          onPress={() => router.replace('/onboarding')}
+        >
           <Text style={styles.endButtonSecondaryText}>Back to home</Text>
         </Pressable>
       </View>
@@ -147,13 +174,20 @@ export default function FeedScreen() {
             key={f.id}
             style={[
               styles.progressSegment,
-              { backgroundColor: i <= index ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.25)' },
+              {
+                backgroundColor:
+                  i <= index
+                    ? 'rgba(255,255,255,0.9)'
+                    : 'rgba(255,255,255,0.25)',
+              },
             ]}
           />
         ))}
       </View>
 
-      <Animated.View style={[styles.cardWrapper, { opacity, transform: [{ translateY }] }]}>
+      <Animated.View
+        style={[styles.cardWrapper, { opacity, transform: [{ translateY }] }]}
+      >
         <FactCard fact={current} saved={savedIds.includes(current.id)} />
       </Animated.View>
 

@@ -25,7 +25,11 @@ function shuffle<T>(arr: T[]): T[] {
  * unseen facts first. If every fact from the selected topics has been
  * seen, the deck reshuffles and reuses them so the feed never dead-ends.
  */
-export function getFeed(topics: TopicId[], seenIds: string[], count: number): Fact[] {
+export function getFeed(
+  topics: TopicId[],
+  seenIds: string[],
+  count: number,
+): Fact[] {
   const pool = ALL_FACTS.filter((f) => topics.includes(f.topic));
   if (pool.length === 0) return [];
 

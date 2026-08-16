@@ -8,7 +8,15 @@ function random(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
-function Star({ top, left, size }: { top: number; left: number; size: number }) {
+function Star({
+  top,
+  left,
+  size,
+}: {
+  top: number;
+  left: number;
+  size: number;
+}) {
   const opacity = useRef(new Animated.Value(random(0.2, 0.6))).current;
 
   useEffect(() => {
@@ -19,8 +27,16 @@ function Star({ top, left, size }: { top: number; left: number; size: number }) 
       if (!mounted) return;
       const duration = random(1400, 3200);
       Animated.sequence([
-        Animated.timing(opacity, { toValue: random(0.7, 1), duration, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: random(0.15, 0.4), duration, useNativeDriver: true }),
+        Animated.timing(opacity, {
+          toValue: random(0.7, 1),
+          duration,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: random(0.15, 0.4),
+          duration,
+          useNativeDriver: true,
+        }),
       ]).start(() => twinkle());
     };
 
@@ -51,7 +67,10 @@ function Star({ top, left, size }: { top: number; left: number; size: number }) 
 function ShootingStar() {
   const translate = useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const opacity = useRef(new Animated.Value(0)).current;
-  const [origin, setOrigin] = useState(() => ({ top: random(6, 30), left: random(4, 50) }));
+  const [origin, setOrigin] = useState(() => ({
+    top: random(6, 30),
+    left: random(4, 50),
+  }));
 
   useEffect(() => {
     let mounted = true;
@@ -64,10 +83,22 @@ function ShootingStar() {
       opacity.setValue(0);
 
       Animated.sequence([
-        Animated.timing(opacity, { toValue: 1, duration: 120, useNativeDriver: true }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 120,
+          useNativeDriver: true,
+        }),
         Animated.parallel([
-          Animated.timing(translate, { toValue: { x: 110, y: 70 }, duration: 650, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0, duration: 650, useNativeDriver: true }),
+          Animated.timing(translate, {
+            toValue: { x: 110, y: 70 },
+            duration: 650,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacity, {
+            toValue: 0,
+            duration: 650,
+            useNativeDriver: true,
+          }),
         ]),
       ]).start(() => {
         timeoutId = setTimeout(fire, random(3500, 8000));
@@ -89,7 +120,11 @@ function ShootingStar() {
           top: `${origin.top}%`,
           left: `${origin.left}%`,
           opacity,
-          transform: [{ translateX: translate.x }, { translateY: translate.y }, { rotate: '32deg' }],
+          transform: [
+            { translateX: translate.x },
+            { translateY: translate.y },
+            { rotate: '32deg' },
+          ],
         },
       ]}
     >
@@ -111,7 +146,7 @@ export default function StarfieldBackground() {
         left: random(0, 100),
         size: random(1, 2.6),
       })),
-    []
+    [],
   );
 
   return (
