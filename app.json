@@ -8,9 +8,11 @@
     "scheme": "upscroll",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.arunav9.upscroll"
     },
     "android": {
+      "package": "com.arunav9.upscroll",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",

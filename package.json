@@ -7,6 +7,7 @@
     "@react-native-masked-view/masked-view": "0.3.2",
     "expo": "^57",
     "expo-constants": "~57.0.11",
+    "expo-dev-client": "~57.0.12",
     "expo-haptics": "~57.0.1",
     "expo-linear-gradient": "~57.0.1",
     "expo-linking": "~57.0.6",
