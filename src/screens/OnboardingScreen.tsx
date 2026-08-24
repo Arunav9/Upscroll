@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
+  Easing,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,14 +12,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StarfieldBackground from '../components/StarfieldBackground';
-import Wordmark from '../components/Wordmark';
 import { colors } from '../constants/theme';
 import { TOPICS, type TopicId } from '../content/topics';
-import {
-  getSelectedTopics,
-  setOnboarded,
-  setSelectedTopics,
-} from '../services/prefs';
+import { getSelectedTopics, setSelectedTopics } from '../services/prefs';
 
 const MIN_TOPICS = 3;
 
@@ -26,22 +22,25 @@ export default function OnboardingScreen() {
   const [selected, setSelected] = useState<Set<TopicId>>(new Set());
 
   const fade = useRef(new Animated.Value(0)).current;
-  const rise = useRef(new Animated.Value(16)).current;
+  const scale = useRef(new Animated.Value(0.85)).current;
 
   useEffect(() => {
+    // A quick pop from the center — no slide, just fade + scale up with a
+    // slight overshoot so it feels like it springs into place.
     Animated.parallel([
       Animated.timing(fade, {
         toValue: 1,
-        duration: 500,
+        duration: 280,
         useNativeDriver: true,
       }),
-      Animated.timing(rise, {
-        toValue: 0,
-        duration: 500,
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 280,
+        easing: Easing.out(Easing.back(1.6)),
         useNativeDriver: true,
       }),
     ]).start();
-  }, [fade, rise]);
+  }, [fade, scale]);
 
   useEffect(() => {
     getSelectedTopics().then((topics) => {
@@ -66,7 +65,6 @@ export default function OnboardingScreen() {
   const handleStart = async () => {
     if (!canStart) return;
     await setSelectedTopics(Array.from(selected));
-    await setOnboarded(true);
     router.replace('/feed');
   };
 
@@ -79,10 +77,7 @@ export default function OnboardingScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <Animated.View
-            style={{ opacity: fade, transform: [{ translateY: rise }] }}
-          >
-            <Wordmark />
+          <Animated.View style={{ opacity: fade, transform: [{ scale }] }}>
             <Text style={styles.tagline}>
               Swap the scroll for something worth remembering.
             </Text>
