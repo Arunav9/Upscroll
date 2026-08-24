@@ -77,17 +77,18 @@ export default function FeedScreen() {
   // Fires continuously while the list is being dragged/decelerated (not just
   // once it settles), so the progress bar tracks the finger instead of
   // jumping only when the page finishes snapping.
-  const onScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const newIndex = Math.round(event.nativeEvent.contentOffset.y / height);
-    setIndex((prev) => (prev === newIndex ? prev : newIndex));
-  }, []);
+  const onScroll = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      const newIndex = Math.round(event.nativeEvent.contentOffset.y / height);
+      setIndex((prev) => (prev === newIndex ? prev : newIndex));
+    },
+    [],
+  );
 
   const onMomentumScrollEnd = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       if (!deck) return;
-      const newIndex = Math.round(
-        event.nativeEvent.contentOffset.y / height,
-      );
+      const newIndex = Math.round(event.nativeEvent.contentOffset.y / height);
       const prevIndex = prevIndexRef.current;
       if (newIndex === prevIndex) return;
 
