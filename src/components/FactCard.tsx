@@ -28,7 +28,7 @@ export default function FactCard({ fact, saved }: Props) {
 
       <View style={styles.footer}>
         <Text style={styles.source}>Source: {fact.source}</Text>
-        <Text style={styles.hint}>Tap right for next · left for back</Text>
+        <Text style={styles.hint}>Swipe up for next · hold to save</Text>
       </View>
     </LinearGradient>
   );
