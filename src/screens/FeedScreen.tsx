@@ -2,9 +2,11 @@ import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Animated,
   Dimensions,
-  PanResponder,
+  FlatList,
+  type ListRenderItemInfo,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   Pressable,
   StyleSheet,
   Text,
@@ -22,16 +24,18 @@ import {
 } from '../services/prefs';
 
 const SESSION_SIZE = 10;
-const SWIPE_THRESHOLD = 60;
+
+type EndItem = { id: '__session_end__'; isEnd: true };
+type FeedItem = Fact | EndItem;
+
+const { height } = Dimensions.get('window');
 
 export default function FeedScreen() {
   const [deck, setDeck] = useState<Fact[] | null>(null);
-  const [state, setState] = useState({ index: 0, ended: false });
+  const [index, setIndex] = useState(0);
   const [savedIds, setSavedIds] = useState<string[]>([]);
-  const { index, ended: sessionEnded } = state;
-
-  const translateY = useRef(new Animated.Value(0)).current;
-  const opacity = useRef(new Animated.Value(1)).current;
+  const listRef = useRef<FlatList<FeedItem>>(null);
+  const prevIndexRef = useRef(0);
 
   const loadDeck = useCallback(async () => {
     const [topics, seen, saved] = await Promise.all([
@@ -42,89 +46,18 @@ export default function FeedScreen() {
     const facts = getFeed(topics, seen, SESSION_SIZE);
     setDeck(facts);
     setSavedIds(saved);
-    setState({ index: 0, ended: false });
+    setIndex(0);
+    prevIndexRef.current = 0;
+    // New deck reuses this same FlatList instance, so its scroll offset
+    // needs an explicit reset back to the top of the fresh session.
+    requestAnimationFrame(() => {
+      listRef.current?.scrollToOffset({ offset: 0, animated: false });
+    });
   }, []);
 
   useEffect(() => {
     loadDeck();
   }, [loadDeck]);
-
-  const transitioning = useRef(false);
-
-  const runTransition = useCallback(
-    (direction: 1 | -1, nextIndexOf: (prev: number) => number) => {
-      if (transitioning.current) return;
-      transitioning.current = true;
-
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      const exitTo = direction === 1 ? -24 : 24;
-      const enterFrom = -exitTo;
-
-      Animated.parallel([
-        Animated.timing(translateY, {
-          toValue: exitTo,
-          duration: 90,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 90,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        translateY.setValue(enterFrom);
-        setState((prev) => {
-          const nextIndex = nextIndexOf(prev.index);
-          if (deck && direction === 1 && prev.index < deck.length) {
-            addSeenIds([deck[prev.index].id]);
-          }
-          const ended = !!deck && nextIndex >= deck.length;
-          return { index: nextIndex, ended };
-        });
-        // Unlock as soon as the content has swapped, not after the fade-in
-        // finishes — lets a fast follow-up tap interrupt the fade-in instead
-        // of queuing behind it, which is what makes rapid tapping feel snappy.
-        transitioning.current = false;
-        Animated.parallel([
-          Animated.timing(translateY, {
-            toValue: 0,
-            duration: 130,
-            useNativeDriver: true,
-          }),
-          Animated.timing(opacity, {
-            toValue: 1,
-            duration: 130,
-            useNativeDriver: true,
-          }),
-        ]).start();
-      });
-    },
-    [deck, translateY, opacity],
-  );
-
-  const advance = useCallback(() => {
-    runTransition(1, (prev) => prev + 1);
-  }, [runTransition]);
-
-  const goBack = useCallback(() => {
-    if (index === 0) return;
-    runTransition(-1, (prev) => Math.max(prev - 1, 0));
-  }, [index, runTransition]);
-
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dy) > 10,
-        onPanResponderRelease: (_, gesture) => {
-          if (gesture.dy < -SWIPE_THRESHOLD) {
-            advance();
-          } else if (gesture.dy > SWIPE_THRESHOLD) {
-            goBack();
-          }
-        },
-      }),
-    [advance, goBack],
-  );
 
   const handleSave = useCallback(async (id: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -136,38 +69,96 @@ export default function FeedScreen() {
     loadDeck();
   }, [loadDeck]);
 
+  const items: FeedItem[] = useMemo(
+    () => (deck ? [...deck, { id: '__session_end__', isEnd: true }] : []),
+    [deck],
+  );
+
+  // Fires continuously while the list is being dragged/decelerated (not just
+  // once it settles), so the progress bar tracks the finger instead of
+  // jumping only when the page finishes snapping.
+  const onScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const newIndex = Math.round(event.nativeEvent.contentOffset.y / height);
+    setIndex((prev) => (prev === newIndex ? prev : newIndex));
+  }, []);
+
+  const onMomentumScrollEnd = useCallback(
+    (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (!deck) return;
+      const newIndex = Math.round(
+        event.nativeEvent.contentOffset.y / height,
+      );
+      const prevIndex = prevIndexRef.current;
+      if (newIndex === prevIndex) return;
+
+      if (newIndex > prevIndex) {
+        const passed = deck
+          .slice(prevIndex, Math.min(newIndex, deck.length))
+          .map((f) => f.id);
+        if (passed.length) addSeenIds(passed);
+      }
+      prevIndexRef.current = newIndex;
+    },
+    [deck],
+  );
+
+  const getItemLayout = useCallback(
+    (_: ArrayLike<FeedItem> | null | undefined, i: number) => ({
+      length: height,
+      offset: height * i,
+      index: i,
+    }),
+    [],
+  );
+
+  const keyExtractor = useCallback((item: FeedItem) => item.id, []);
+
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<FeedItem>) => {
+      if ('isEnd' in item) {
+        return (
+          <View style={[styles.endContainer, { height }]}>
+            <Text style={styles.endEmoji}>🎉</Text>
+            <Text style={styles.endTitle}>
+              You learned {deck?.length ?? 0} things.
+            </Text>
+            <Text style={styles.endSubtitle}>
+              Nice. That&apos;s a session well spent.
+            </Text>
+            <Pressable style={styles.endButton} onPress={startMore}>
+              <Text style={styles.endButtonText}>
+                Give me {SESSION_SIZE} more
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.endButtonSecondary}
+              onPress={() => router.replace('/onboarding')}
+            >
+              <Text style={styles.endButtonSecondaryText}>Back to home</Text>
+            </Pressable>
+          </View>
+        );
+      }
+
+      return (
+        <Pressable
+          style={{ height }}
+          onLongPress={() => handleSave(item.id)}
+          delayLongPress={350}
+        >
+          <FactCard fact={item} saved={savedIds.includes(item.id)} />
+        </Pressable>
+      );
+    },
+    [deck?.length, handleSave, savedIds, startMore],
+  );
+
   if (!deck) {
     return <View style={styles.loading} />;
   }
 
-  if (sessionEnded) {
-    return (
-      <View style={styles.endContainer}>
-        <Text style={styles.endEmoji}>🎉</Text>
-        <Text style={styles.endTitle}>You learned {deck.length} things.</Text>
-        <Text style={styles.endSubtitle}>
-          Nice. That&apos;s a session well spent.
-        </Text>
-        <Pressable style={styles.endButton} onPress={startMore}>
-          <Text style={styles.endButtonText}>Give me {SESSION_SIZE} more</Text>
-        </Pressable>
-        <Pressable
-          style={styles.endButtonSecondary}
-          onPress={() => router.replace('/onboarding')}
-        >
-          <Text style={styles.endButtonSecondaryText}>Back to home</Text>
-        </Pressable>
-      </View>
-    );
-  }
-
-  const current = deck[index];
-  if (!current) {
-    return <View style={styles.loading} />;
-  }
-
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.progressTrack}>
           {deck.map((f, i) => (
@@ -197,29 +188,29 @@ export default function FeedScreen() {
         </Pressable>
       </View>
 
-      <Animated.View
-        style={[styles.cardWrapper, { opacity, transform: [{ translateY }] }]}
-      >
-        <FactCard fact={current} saved={savedIds.includes(current.id)} />
-      </Animated.View>
-
-      <View style={styles.tapZones} pointerEvents="box-none">
-        <Pressable
-          style={styles.tapZoneLeft}
-          onPress={goBack}
-          onLongPress={() => handleSave(current.id)}
-        />
-        <Pressable
-          style={styles.tapZoneRight}
-          onPress={advance}
-          onLongPress={() => handleSave(current.id)}
-        />
-      </View>
+      <FlatList
+        ref={listRef}
+        data={items}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        decelerationRate="fast"
+        snapToInterval={height}
+        snapToAlignment="start"
+        bounces={false}
+        getItemLayout={getItemLayout}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+        onMomentumScrollEnd={onMomentumScrollEnd}
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        windowSize={5}
+        removeClippedSubviews
+      />
     </View>
   );
 }
-
-const { height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -266,22 +257,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 16,
   },
-  tapZones: {
-    ...StyleSheet.absoluteFill,
-    flexDirection: 'row',
-  },
-  tapZoneLeft: {
-    flex: 1,
-  },
-  tapZoneRight: {
-    flex: 1,
-  },
-  cardWrapper: {
-    flex: 1,
-    minHeight: height,
-  },
   endContainer: {
-    flex: 1,
     backgroundColor: colors.endScreenBackground,
     alignItems: 'center',
     justifyContent: 'center',
