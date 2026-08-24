@@ -43,3 +43,4 @@ yarn-error.*
 
 # local-only agent instructions
 CLAUDE.md
+AGENTS.md
