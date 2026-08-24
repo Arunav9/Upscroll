@@ -168,21 +168,33 @@ export default function FeedScreen() {
 
   return (
     <View style={styles.container} {...panResponder.panHandlers}>
-      <View style={styles.progressTrack}>
-        {deck.map((f, i) => (
-          <View
-            key={f.id}
-            style={[
-              styles.progressSegment,
-              {
-                backgroundColor:
-                  i <= index
-                    ? 'rgba(255,255,255,0.9)'
-                    : 'rgba(255,255,255,0.25)',
-              },
-            ]}
-          />
-        ))}
+      <View style={styles.header}>
+        <View style={styles.progressTrack}>
+          {deck.map((f, i) => (
+            <View
+              key={f.id}
+              style={[
+                styles.progressSegment,
+                {
+                  backgroundColor:
+                    i <= index
+                      ? 'rgba(255,255,255,0.9)'
+                      : 'rgba(255,255,255,0.25)',
+                },
+              ]}
+            />
+          ))}
+        </View>
+        <Pressable
+          style={({ pressed }) => [
+            styles.homeButton,
+            pressed && styles.homeButtonPressed,
+          ]}
+          onPress={() => router.replace('/onboarding')}
+          hitSlop={8}
+        >
+          <Text style={styles.homeIcon}>⌂</Text>
+        </Pressable>
       </View>
 
       <Animated.View
@@ -218,12 +230,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.screenBackground,
   },
-  progressTrack: {
+  header: {
     position: 'absolute',
     top: 56,
     left: 16,
     right: 16,
     zIndex: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  progressTrack: {
+    flex: 1,
     flexDirection: 'row',
     gap: 4,
   },
@@ -231,6 +249,22 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 3,
     borderRadius: 2,
+  },
+  homeButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  homeButtonPressed: {
+    backgroundColor: 'rgba(255,255,255,0.24)',
+  },
+  homeIcon: {
+    color: colors.white,
+    fontSize: 16,
+    lineHeight: 16,
   },
   tapZones: {
     ...StyleSheet.absoluteFill,
