@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     right: 16,
     zIndex: 10,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: 12,
   },
   progressTrack: {
