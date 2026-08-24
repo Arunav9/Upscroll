@@ -5,7 +5,6 @@ const KEYS = {
   topics: 'skrollit:topics',
   seen: 'skrollit:seenIds',
   saved: 'skrollit:savedIds',
-  onboarded: 'skrollit:onboarded',
 } as const;
 
 async function readJson<T>(key: string, fallback: T): Promise<T> {
@@ -51,13 +50,4 @@ export async function toggleSavedId(id: string): Promise<string[]> {
     : [...existing, id];
   await AsyncStorage.setItem(KEYS.saved, JSON.stringify(next));
   return next;
-}
-
-export async function isOnboarded(): Promise<boolean> {
-  const raw = await AsyncStorage.getItem(KEYS.onboarded);
-  return raw === 'true';
-}
-
-export async function setOnboarded(value: boolean): Promise<void> {
-  await AsyncStorage.setItem(KEYS.onboarded, value ? 'true' : 'false');
 }
