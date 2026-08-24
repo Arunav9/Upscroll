@@ -5,14 +5,14 @@ import { colors } from '../constants/theme';
 
 export default function Wordmark() {
   return (
-    <MaskedView maskElement={<Text style={styles.text}>Upscroll</Text>}>
+    <MaskedView maskElement={<Text style={styles.text}>Skrollit</Text>}>
       <LinearGradient
         colors={colors.auroraGradient}
         locations={[0, 0.3333, 0.6667, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
       >
-        <Text style={[styles.text, styles.hidden]}>Upscroll</Text>
+        <Text style={[styles.text, styles.hidden]}>Skrollit</Text>
       </LinearGradient>
     </MaskedView>
   );

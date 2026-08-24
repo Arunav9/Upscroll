@@ -2,10 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { TopicId } from '../content/topics';
 
 const KEYS = {
-  topics: 'upscroll:topics',
-  seen: 'upscroll:seenIds',
-  saved: 'upscroll:savedIds',
-  onboarded: 'upscroll:onboarded',
+  topics: 'skrollit:topics',
+  seen: 'skrollit:seenIds',
+  saved: 'skrollit:savedIds',
+  onboarded: 'skrollit:onboarded',
 } as const;
 
 async function readJson<T>(key: string, fallback: T): Promise<T> {

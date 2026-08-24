@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "Upscroll",
-    "slug": "upscroll",
+    "name": "Skrollit",
+    "slug": "skrollit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "upscroll",
+    "scheme": "skrollit",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.arunav9.upscroll"
+      "bundleIdentifier": "com.arunav9.skrollit"
     },
     "android": {
-      "package": "com.arunav9.upscroll",
+      "package": "com.arunav9.skrollit",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
