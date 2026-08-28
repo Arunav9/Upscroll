@@ -78,14 +78,11 @@ export default function OnboardingScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Animated.View style={{ opacity: fade, transform: [{ scale }] }}>
-            <Text style={styles.tagline}>
-              Swap the scroll for something worth remembering.
-            </Text>
-
             <Text style={styles.title}>What do you want to learn about?</Text>
             <Text style={styles.subtitle}>
-              Pick at least {MIN_TOPICS} topics. We&apos;ll turn your feed into
-              fun facts instead of noise.
+              Swap the scroll for something worth remembering. Pick at least{' '}
+              {MIN_TOPICS} topics. We&apos;ll turn your feed into fun facts
+              instead of noise.
             </Text>
 
             <View style={styles.grid}>
@@ -109,7 +106,6 @@ export default function OnboardingScreen() {
                         <Text style={styles.chipLabelSelected}>
                           {topic.label}
                         </Text>
-                        <Text style={styles.checkMark}>✓</Text>
                       </LinearGradient>
                     ) : (
                       <View style={[styles.chip, styles.chipUnselected]}>
@@ -170,68 +166,60 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 20,
   },
-  tagline: {
-    color: 'rgba(255,255,255,0.5)',
-    fontSize: 13,
-    marginTop: 6,
-    marginBottom: 28,
-  },
   title: {
     color: '#fff',
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: '800',
-    marginBottom: 8,
-    lineHeight: 36,
+    marginBottom: 6,
+    lineHeight: 29,
+    letterSpacing: -0.2,
   },
   subtitle: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: 15,
-    lineHeight: 21,
-    marginBottom: 28,
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 12.5,
+    lineHeight: 18,
+    marginBottom: 24,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 7,
   },
   chipTouch: {
-    borderRadius: 999,
+    width: '31%',
+    borderRadius: 14,
   },
   chipPressed: {
     opacity: 0.75,
     transform: [{ scale: 0.97 }],
   },
   chip: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 999,
+    gap: 6,
+    paddingVertical: 16,
+    paddingHorizontal: 4,
+    borderRadius: 14,
   },
   chipUnselected: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.14)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   chipEmoji: {
-    fontSize: 18,
+    fontSize: 24,
   },
   chipLabel: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 15,
-    fontWeight: '600',
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 13,
+    fontWeight: '500',
+    textAlign: 'center',
   },
   chipLabelSelected: {
     color: '#fff',
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '700',
-  },
-  checkMark: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '800',
-    marginLeft: 2,
+    textAlign: 'center',
   },
   footer: {
     padding: 24,
